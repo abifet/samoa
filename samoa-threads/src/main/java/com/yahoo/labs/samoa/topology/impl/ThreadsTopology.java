@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.yahoo.labs.samoa.topology.impl;
 
 /*
@@ -25,23 +21,31 @@ package com.yahoo.labs.samoa.topology.impl;
  */
 
 import com.yahoo.labs.samoa.topology.EntranceProcessingItem;
+import com.yahoo.labs.samoa.topology.IProcessingItem;
 import com.yahoo.labs.samoa.topology.Topology;
 
-public class SimpleTopology extends Topology {
-
-    public String topologyName;
-    private SimpleEntranceProcessingItem entrancePi; // TODO allow multiple EntrancePIs
+/**
+ * Topology for multithreaded engine.
+ * @author Anh Thu Vu
+ *
+ */
+public class ThreadsTopology extends Topology {
+	
+	public String topologyName;
+    private ThreadsEntranceProcessingItem entrancePi;
 
     public void run() {
     	if (entrancePi == null) 
     		throw new IllegalStateException("You need to set entrance PI before running the topology.");
-    	
-    	this.entrancePi.getProcessor().onCreate(0); // id=0 as it is not used in simple mode
-        this.entrancePi.startSendingEvents();
+    		
+    	this.setupProcessingItemInstances();
+    	entrancePi.getProcessor().onCreate(0); // id=0 as it's not used in multithreading mode
+    	entrancePi.startSendingEvents();
     }
-
-    SimpleTopology(String topoName) {
-        this.topologyName = topoName;
+    
+    public ThreadsTopology(String topoName) {
+    	super();
+    	this.topologyName = topoName;
     }
 
     public EntranceProcessingItem getEntranceProcessingItem() {
@@ -50,7 +54,20 @@ public class SimpleTopology extends Topology {
 
     @Override
     public void addEntrancePi(EntranceProcessingItem epi) {
-        this.entrancePi = (SimpleEntranceProcessingItem) epi;
-        super.addProcessingItem(epi);
+        this.entrancePi = (ThreadsEntranceProcessingItem) epi;
+        this.addProcessingItem(epi);
+    }
+    
+    /* 
+     * Tell all the ThreadsProcessingItems to create & init their 
+     * replicas (ThreadsProcessingItemInstance)
+     */
+    private void setupProcessingItemInstances() {
+    	for (IProcessingItem pi:this.processingItems) {
+    		if (pi instanceof ThreadsProcessingItem) {
+    			ThreadsProcessingItem tpi = (ThreadsProcessingItem) pi;
+    			tpi.setupInstances();
+    		}
+    	}
     }
 }

@@ -196,6 +196,21 @@ elif [ $PLATFORM = 'STORM' ]; then
 
 	$STORM_EXEC jar $DEPLOYABLE com.yahoo.labs.samoa.topology.impl.StormDoTask $COMPLETE_ARG $NUM_WORKER $MODE_ARG
 
+elif [ $PLATFORM = 'THREADS' ]; then
+	
+	echo "Deploying to LOCAL with MULTITHREADING."
+	COMPLETE_ARG=""
+        COUNTER=0
+        for var in "$@"
+        do
+            COUNTER=`expr $COUNTER + 1`
+            if [ $COUNTER -gt 2 ];then
+                COMPLETE_ARG="$COMPLETE_ARG $var"
+            fi
+        done
+        
+	java $JAVA_OPTS -cp $JAR_PATH com.yahoo.labs.samoa.LocalThreadsDoTask $COMPLETE_ARG
+
 elif [ $PLATFORM = 'LOCAL' ]; then
 
 	echo "Deploying to $PLATFORM"

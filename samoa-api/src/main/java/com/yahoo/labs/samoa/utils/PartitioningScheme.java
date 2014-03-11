@@ -1,8 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.yahoo.labs.samoa.topology.impl;
+package com.yahoo.labs.samoa.utils;
 
 /*
  * #%L
@@ -24,15 +20,13 @@ package com.yahoo.labs.samoa.topology.impl;
  * #L%
  */
 
-import com.yahoo.labs.samoa.topology.EntranceProcessingItem;
-import com.yahoo.labs.samoa.topology.Topology;
-
-public class SimpleEngine {
-
-    public static void submitTopology(Topology topology) {
-        SimpleTopology simpleTopology = (SimpleTopology) topology;
-        simpleTopology.run();
-        Runtime.getRuntime().exit(0); // terminates execution and all launched threads
-    }
-
+/**
+ * Represents the 3 schemes to partition the streams
+ * @author Anh Thu Vu
+ *
+ */
+public enum PartitioningScheme {
+	SHUFFLE, GROUP_BY_KEY, BROADCAST
 }
+// TODO: use this enum in S4
+// Storm doesn't seem to need this
